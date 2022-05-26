@@ -9,7 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StoryRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Story
 {
     #[ORM\Id]
@@ -18,23 +21,16 @@ class Story
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["read", "write"])]
     private $title;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(["read", "write"])]
     private $description;
 
     #[ORM\Column(type: 'string', length: 13, nullable: true)]
+    #[Groups("read")]
     private $ean;
-
-    public function __construct()
-    {
-        $ean = 97;
-        $ean .= rand(8, 9);
-        for ($i=0; $i<10; $i++) {
-            $ean .= rand(0,9);
-        }
-        $this->ean = $ean;
-    }
     
     public function getId(): ?int
     {
